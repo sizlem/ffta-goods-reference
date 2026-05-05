@@ -106,28 +106,30 @@
       line-height: 1.35;
     }
     .footer {
-      display: grid;
-      grid-template-columns: 1fr 120px;
-      gap: 10px;
-      align-items: center;
+      display: flex;
+      justify-content: flex-end;
       margin-top: 8px;
-      padding: 8px 10px;
+    }
+    .qr-box {
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+      width: 148px;
+      padding: 8px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--panel);
+      text-align: center;
     }
-    .footer p {
-      margin: 0 0 3px;
-      font-size: 11px;
-      line-height: 1.4;
-    }
-    .footer p:last-child {
-      margin-bottom: 0;
+    .qr-box p {
+      margin: 0;
+      font-size: 10px;
+      line-height: 1.35;
     }
     .qr img {
       display: block;
-      width: 120px;
-      height: 120px;
+      width: 108px;
+      height: 108px;
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 6px;
@@ -225,13 +227,12 @@
     </section>
 
     <section class="footer">
-      <div>
-        <p><strong>Web page:</strong> https://sizlem.github.io/ffta-goods-reference/</p>
-        <p><strong>Contact:</strong> <span class="mail">sizscomro@gmail.com</span></p>
-        <p>ページを後で共有したい場合は、右のQRコードを使ってください。</p>
-      </div>
-      <div class="qr">
-        <img src="images/47_share_qr_github_pages.png" alt="QR code for the web page">
+      <div class="qr-box">
+        <div class="qr">
+          <img src="images/47_share_qr_github_pages.png" alt="QR code for the web page">
+        </div>
+        <p>共有用QR</p>
+        <p><span class="mail">sizscomro@gmail.com</span></p>
       </div>
     </section>
   </main>
