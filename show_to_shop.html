@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FFT-A Goods Reference</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f7f7f4;
+      --panel: #ffffff;
+      --ink: #1f2933;
+      --line: #d8d6cb;
+      --accent: #9b3f2f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      padding-bottom: 92px;
+    }
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(25px, 5vw, 32px);
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+    .lead {
+      font-size: clamp(16px, 3.6vw, 18px);
+      line-height: 1.7;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 18px;
+      border-radius: 8px;
+    }
+    .items {
+      display: grid;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    details.item {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    details.item[open] {
+      border-color: #b8b3a4;
+    }
+    summary.item-summary {
+      list-style: none;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(230px, 380px);
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      cursor: pointer;
+    }
+    summary.item-summary::-webkit-details-marker {
+      display: none;
+    }
+    .item-title {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .item-text {
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .item-hint {
+      margin-top: 8px;
+      color: #64707d;
+      font-size: 13px;
+    }
+    .thumbs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
+      gap: 8px;
+    }
+    .thumbs img,
+    figure img {
+      width: 100%;
+      object-fit: contain;
+      background: #fff;
+      cursor: zoom-in;
+    }
+    .thumbs img {
+      height: 118px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+    .item-detail {
+      border-top: 1px solid var(--line);
+      padding: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+    }
+    figure {
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--panel);
+    }
+    figure img {
+      height: 230px;
+      display: block;
+    }
+    figcaption {
+      padding: 10px 12px 12px;
+      font-size: 14px;
+      line-height: 1.45;
+      min-height: 58px;
+    }
+    .highlight {
+      border-color: var(--accent);
+      box-shadow: inset 0 0 0 2px var(--accent);
+    }
+    .language-toggle {
+      position: fixed;
+      right: max(16px, env(safe-area-inset-right));
+      bottom: max(16px, env(safe-area-inset-bottom));
+      z-index: 20;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      width: min(320px, calc(100vw - 32px));
+      padding: 6px;
+      background: rgba(31, 41, 51, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(10px);
+    }
+    .language-toggle button {
+      min-width: 0;
+      min-height: 42px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: #fff;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .language-toggle button[aria-pressed="true"] {
+      background: #fff;
+      color: var(--ink);
+    }
+    .zoom-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(12, 18, 24, 0.82);
+    }
+    .zoom-overlay.is-open {
+      display: grid;
+    }
+    .zoom-panel {
+      width: min(960px, 100%);
+      max-height: calc(100vh - 36px);
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+    .zoom-panel img {
+      width: 100%;
+      max-height: calc(100vh - 112px);
+      object-fit: contain;
+      background: #fff;
+      border-radius: 8px;
+      cursor: zoom-out;
+    }
+    .zoom-caption {
+      min-height: 24px;
+      color: #fff;
+      font-size: 15px;
+      line-height: 1.45;
+      text-align: center;
+    }
+    @media (max-width: 680px) {
+      summary.item-summary {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 560px) {
+      main { padding: 18px 14px 24px; }
+      .thumbs img { height: 88px; }
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      figure img { height: 178px; }
+      figcaption {
+        font-size: 12px;
+        min-height: 68px;
+      }
+      .language-toggle {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+      }
+    }
+    @media print {
+      body {
+        background: #fff;
+        padding-bottom: 0;
+      }
+      main { padding: 12mm; }
+      .lead, details.item, figure { break-inside: avoid; }
+      .language-toggle { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 data-i18n="title"></h1>
+    <div class="lead" data-i18n="lead"></div>
+
+    <section class="items">
+      <details class="item">
+        <summary class="item-summary">
+          <div>
+            <span class="item-title" data-i18n="cgcTitle"></span>
+            <span class="item-text" data-i18n="cgcText"></span>
+            <div class="item-hint" data-i18n="openHint"></div>
+          </div>
+          <div class="thumbs">
+            <img src="images/10_CGC_booster_box_side.jpg" alt="">
+            <img src="images/02_CGC_booster_pack.jpg" alt="">
+            <img src="images/06_CGC_character_marche_foil.jpg" alt="">
+            <img src="images/03_CGC_card_back.jpg" alt="">
+          </div>
+        </summary>
+        <div class="item-detail">
+          <div class="grid">
+            <figure><img src="images/10_CGC_booster_box_side.jpg" alt=""><figcaption data-i18n="capBox"></figcaption></figure>
+            <figure><img src="images/02_CGC_booster_pack.jpg" alt=""><figcaption data-i18n="capPack"></figcaption></figure>
+            <figure><img src="images/06_CGC_character_marche_foil.jpg" alt=""><figcaption data-i18n="capMarche"></figcaption></figure>
+            <figure><img src="images/03_CGC_card_back.jpg" alt=""><figcaption data-i18n="capBack"></figcaption></figure>
+            <figure><img src="images/08_CGC_law_card_sample.jpg" alt=""><figcaption data-i18n="capLaw"></figcaption></figure>
+            <figure><img src="images/12_CGC_ability_mindbreak_ab01.jpg" alt=""><figcaption data-i18n="capAb01"></figcaption></figure>
+            <figure><img src="images/18_CGC_ability_exodus_ab40_last.jpg" alt=""><figcaption data-i18n="capAb40"></figcaption></figure>
+          </div>
+        </div>
+      </details>
+
+      <details class="item">
+        <summary class="item-summary">
+          <div>
+            <span class="item-title" data-i18n="pinsTitle"></span>
+            <span class="item-text" data-i18n="pinsText"></span>
+            <div class="item-hint" data-i18n="openHint"></div>
+          </div>
+          <div class="thumbs">
+            <img src="images/41_pin_badges_ebay_full_set_better.webp" alt="">
+            <img src="images/11_pin_badges_reddit_reference.jpg" alt="">
+            <img src="images/43_pin_badges_ebay_set2_overview.webp" alt="">
+          </div>
+        </summary>
+        <div class="item-detail">
+          <div class="grid">
+            <figure class="highlight"><img src="images/41_pin_badges_ebay_full_set_better.webp" alt=""><figcaption data-i18n="capPins"></figcaption></figure>
+            <figure><img src="images/11_pin_badges_reddit_reference.jpg" alt=""><figcaption data-i18n="capPinsClose"></figcaption></figure>
+            <figure><img src="images/42_pin_badges_ebay_closeup_better.webp" alt=""><figcaption data-i18n="capPinsClose"></figcaption></figure>
+            <figure class="highlight"><img src="images/43_pin_badges_ebay_set2_overview.webp" alt=""><figcaption data-i18n="capPinsSet2"></figcaption></figure>
+            <figure><img src="images/44_pin_badges_ebay_set2_pin_back.webp" alt=""><figcaption data-i18n="capPinsBack"></figcaption></figure>
+            <figure><img src="images/45_pin_badges_ebay_set2_box_barcode.webp" alt=""><figcaption data-i18n="capPinsBoxBarcode"></figcaption></figure>
+            <figure><img src="images/46_pin_badges_ebay_set2_box_side.webp" alt=""><figcaption data-i18n="capPinsBoxSide"></figcaption></figure>
+          </div>
+        </div>
+      </details>
+
+      <details class="item">
+        <summary class="item-summary">
+          <div>
+            <span class="item-title" data-i18n="guideTitle"></span>
+            <span class="item-text" data-i18n="guideText"></span>
+            <div class="item-hint" data-i18n="openHint"></div>
+          </div>
+          <div class="thumbs">
+            <img src="images/25_guide_mercari_sold_cover_with_card_1.jpg" alt="">
+            <img src="images/30_guide_mercari_sold_booklet_cover_alt.jpg" alt="">
+            <img src="images/19_preorder_official_guide_book_cover.jpg" alt="">
+          </div>
+        </summary>
+        <div class="item-detail">
+          <div class="grid">
+            <figure class="highlight"><img src="images/25_guide_mercari_sold_cover_with_card_1.jpg" alt=""><figcaption data-i18n="capPreorderCover"></figcaption></figure>
+            <figure><img src="images/26_guide_mercari_sold_detail_2.jpg" alt=""><figcaption data-i18n="capPreorderCover"></figcaption></figure>
+            <figure><img src="images/27_guide_mercari_sold_detail_3.jpg" alt=""><figcaption data-i18n="capPreorderCover"></figcaption></figure>
+            <figure><img src="images/28_guide_mercari_sold_detail_4.jpg" alt=""><figcaption data-i18n="capPreorderCover"></figcaption></figure>
+            <figure><img src="images/29_guide_mercari_sold_detail_5.jpg" alt=""><figcaption data-i18n="capPreorderCover"></figcaption></figure>
+            <figure><img src="images/30_guide_mercari_sold_booklet_cover_alt.jpg" alt=""><figcaption data-i18n="capPreorderCover"></figcaption></figure>
+            <figure><img src="images/31_guide_mercari_sold_booklet_detail_alt.jpg" alt=""><figcaption data-i18n="capPreorderCover"></figcaption></figure>
+            <figure><img src="images/19_preorder_official_guide_book_cover.jpg" alt=""><figcaption data-i18n="capPreorderCover"></figcaption></figure>
+          </div>
+        </div>
+      </details>
+
+      <details class="item">
+        <summary class="item-summary">
+          <div>
+            <span class="item-title" data-i18n="gbaspTitle"></span>
+            <span class="item-text" data-i18n="gbaspText"></span>
+            <div class="item-hint" data-i18n="openHint"></div>
+          </div>
+          <div class="thumbs">
+            <img src="images/04_GBASP_pearl_white_edition_box.jpg" alt="">
+            <img src="images/20_GBASP_pearl_white_console_photo.gif" alt="">
+          </div>
+        </summary>
+        <div class="item-detail">
+          <div class="grid">
+            <figure><img src="images/04_GBASP_pearl_white_edition_box.jpg" alt=""><figcaption data-i18n="capConsole"></figcaption></figure>
+            <figure><img src="images/20_GBASP_pearl_white_console_photo.gif" alt=""><figcaption data-i18n="capConsolePhoto"></figcaption></figure>
+            <figure><img src="images/22_GBASP_pearl_white_original_premium_strap.webp" alt=""><figcaption data-i18n="capStrap"></figcaption></figure>
+            <figure><img src="images/23_GBASP_pearl_white_sp_carrying_pouch.webp" alt=""><figcaption data-i18n="capPouch"></figcaption></figure>
+          </div>
+        </div>
+      </details>
+
+      <details class="item">
+        <summary class="item-summary">
+          <div>
+            <span class="item-title" data-i18n="bonusTitle"></span>
+            <span class="item-text" data-i18n="bonusText"></span>
+            <div class="item-hint" data-i18n="openHint"></div>
+          </div>
+          <div class="thumbs">
+            <img src="images/37_bonus_mandarake_item_1.jpg" alt="">
+            <img src="images/40_bonus_mandarake_item_4.jpg" alt="">
+          </div>
+        </summary>
+        <div class="item-detail">
+          <div class="grid">
+            <figure class="highlight"><img src="images/37_bonus_mandarake_item_1.jpg" alt=""><figcaption data-i18n="capBonusPromo"></figcaption></figure>
+            <figure><img src="images/40_bonus_mandarake_item_4.jpg" alt=""><figcaption data-i18n="capBonusMarche"></figcaption></figure>
+            <figure><img src="images/38_bonus_mandarake_item_2.jpg" alt=""><figcaption data-i18n="capBonusRitz"></figcaption></figure>
+            <figure><img src="images/39_bonus_mandarake_item_3.jpg" alt=""><figcaption data-i18n="capBonusGroup"></figcaption></figure>
+          </div>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <nav class="language-toggle" aria-label="Language">
+    <button type="button" data-lang="ja" aria-pressed="true">日本語</button>
+    <button type="button" data-lang="ko" aria-pressed="false">한국어</button>
+    <button type="button" data-lang="en" aria-pressed="false">English</button>
+  </nav>
+
+  <div class="zoom-overlay" id="zoomOverlay" aria-hidden="true">
+    <div class="zoom-panel">
+      <img id="zoomImage" src="" alt="">
+      <div class="zoom-caption" id="zoomCaption"></div>
+    </div>
+  </div>
+
+  <script>
+    const translations = {
+      ja: {
+        title: "ファイナルファンタジータクティクスアドバンス 関連グッズを探しています",
+        lead: "こんにちは。日本語があまりできません。<br>下記のFFT-A関連グッズを探しています。もし在庫やショーケース、倉庫にありましたら見せていただけますか？",
+        openHint: "タップすると詳細写真を表示します",
+        cgcTitle: "CGCカード",
+        cgcText: "カードゲームコレクション / CGC / ブースターBOX / ブースターパック / シングルカード。キャラクターカード、アビリティカード、ロウカードなどの種類を探しています。下の写真は種類の見本です。",
+        pinsTitle: "トレーディングピンバッジコレクション",
+        pinsText: "メディアファクトリー発売。流通情報では全12種、ランダム1個入りとして確認。",
+        guideTitle: "予約特典 Official Guide Book",
+        guideText: "FINAL FANTASY TACTICS ADVANCE Official Guide Book / オフィシャルガイドブック / 非売品。",
+        gbaspTitle: "GBASP パールホワイト・エディション",
+        gbaspText: "本体同梱版。ソフト、限定色GBASP本体、ACアダプタ、オリジナルプレミアムストラップ、オリジナルSPキャリングポーチのセット。",
+        bonusTitle: "特典・小物",
+        bonusText: "ポストカード / しおり / ブックマーカー / 非売品カード風小物などの特典小物も探しています。下の写真は見本です。",
+        capBox: "カードゲームコレクション CGC ブースターBOX 実物角度写真",
+        capPack: "カードゲームコレクション CGC ブースターパック",
+        capBack: "CGC カード裏面",
+        capMarche: "キャラクターカードの見本（例: Ch-01 Marche Radiuju）",
+        capRitz: "キャラクターカードの見本（例: Ch-03 Ritz Malheur）",
+        capLaw: "ロウカードの見本（例: La-01 Fight Ban）",
+        capAb01: "通常アビリティカードの見本（例: Ab-01 Mindbreak）",
+        capAb07: "通常アビリティカードの見本（例: Ab-07 Air Render）",
+        capAb40: "アビリティカードの見本（例: Ab-40 Exodus / エクスデス）",
+        capPreorderCover: "予約特典・非売品 Official Guide Book 表紙",
+        capConsole: "GBA SP パールホワイト・エディション 外箱",
+        capConsolePhoto: "限定色GBASP本体 パールホワイト",
+        capStrap: "同梱品 オリジナルプレミアムストラップ",
+        capPouch: "同梱品 オリジナルSPキャリングポーチ",
+        capPins: "トレーディングピンバッジ参考画像（全12種として流通情報あり）",
+        capPinsClose: "トレーディングピンバッジ参考画像（個別の絵柄が見やすい近接写真）",
+        capPinsSet2: "トレーディングピンバッジ参考画像（別の12種セット写真）",
+        capPinsBack: "トレーディングピンバッジ参考画像（ピン裏面の近接写真）",
+        capPinsBoxBarcode: "トレーディングピンバッジ参考画像（外箱バーコード側）",
+        capPinsBoxSide: "トレーディングピンバッジ参考画像（外箱側面表記）",
+        capBonusPromo: "特典・非売品カード風小物の見本（ドリマガ 2002 AUTUMN）",
+        capBonusMarche: "小物系カードコレクション見本（マルシュ柄）",
+        capBonusRitz: "小物系カードコレクション見本（リッツ柄）",
+        capBonusGroup: "小物系カードコレクション見本（メインビジュアル柄）"
+      },
+      ko: {
+        title: "파이널 판타지 택틱스 어드밴스 관련 굿즈를 찾고 있습니다",
+        lead: "안녕하세요. 저는 일본어를 잘 못합니다.<br>아래의 FFT-A 관련 굿즈를 찾고 있습니다. 재고, 쇼케이스, 창고에 있다면 보여주실 수 있을까요?",
+        openHint: "탭하면 상세 사진을 펼칩니다",
+        cgcTitle: "CGC 카드",
+        cgcText: "Card Game Collection / CGC / 부스터 BOX / 부스터 팩 / 낱장 카드. 캐릭터 카드, 어빌리티 카드, 로우 카드 같은 종류를 찾고 있습니다. 아래 사진은 종류 예시입니다.",
+        pinsTitle: "트레이딩 핀배지 컬렉션",
+        pinsText: "Media Factory 발매. 유통/판매 정보에서는 전 12종, 랜덤 1개입으로 확인됩니다.",
+        guideTitle: "예약 특전 Official Guide Book",
+        guideText: "FINAL FANTASY TACTICS ADVANCE Official Guide Book / 오피셜 가이드북 / 비매품.",
+        gbaspTitle: "GBASP Pearl White Edition",
+        gbaspText: "본체 동봉판입니다. 소프트, 한정색 GBASP 본체, AC 어댑터, 오리지널 프리미엄 스트랩, 오리지널 SP 캐링 포치 세트입니다.",
+        bonusTitle: "특전/소품",
+        bonusText: "포스트카드 / 책갈피 / 북마커 / 비매품 카드형 소품 같은 특전 소품도 찾고 있습니다. 아래 사진은 예시입니다.",
+        capBox: "Card Game Collection CGC 부스터 BOX 실물 입체 사진",
+        capPack: "Card Game Collection CGC 부스터 팩",
+        capBack: "CGC 카드 뒷면",
+        capMarche: "캐릭터 카드 예시 (예: Ch-01 Marche Radiuju)",
+        capRitz: "캐릭터 카드 예시 (예: Ch-03 Ritz Malheur)",
+        capLaw: "로우 카드 예시 (예: La-01 Fight Ban)",
+        capAb01: "일반 어빌리티 카드 예시 (예: Ab-01 Mindbreak)",
+        capAb07: "일반 어빌리티 카드 예시 (예: Ab-07 Air Render)",
+        capAb40: "어빌리티 카드 예시 (예: Ab-40 Exodus / 엑스데스)",
+        capPreorderCover: "예약 특전/비매품 Official Guide Book 표지",
+        capConsole: "GBA SP Pearl White Edition 외 box",
+        capConsolePhoto: "한정색 GBASP 본체 Pearl White",
+        capStrap: "동봉품 오리지널 프리미엄 스트랩",
+        capPouch: "동봉품 오리지널 SP 캐링 포치",
+        capPins: "트레이딩 핀배지 참고 이미지 (전 12종 유통 정보 확인)",
+        capPinsClose: "트레이딩 핀배지 참고 이미지 (개별 그림이 잘 보이는 근접 사진)",
+        capPinsSet2: "트레이딩 핀배지 참고 이미지 (다른 12종 세트 사진)",
+        capPinsBack: "트레이딩 핀배지 참고 이미지 (핀 뒷면 근접 사진)",
+        capPinsBoxBarcode: "트레이딩 핀배지 참고 이미지 (외박스 바코드 쪽)",
+        capPinsBoxSide: "트레이딩 핀배지 참고 이미지 (외박스 측면 표기)",
+        capBonusPromo: "특전/비매품 카드형 소품 예시 (도리마가 2002 AUTUMN)",
+        capBonusMarche: "소품형 카드 컬렉션 예시 (마르슈 그림)",
+        capBonusRitz: "소품형 카드 컬렉션 예시 (리츠 그림)",
+        capBonusGroup: "소품형 카드 컬렉션 예시 (메인 비주얼 그림)"
+      },
+      en: {
+        title: "I am looking for Final Fantasy Tactics Advance goods",
+        lead: "Hello. I do not speak Japanese well.<br>I am looking for the FFTA items below. If you have any in stock, in a showcase, or in storage, could you please show them to me?",
+        openHint: "Tap to show detail photos",
+        cgcTitle: "CGC cards",
+        cgcText: "Card Game Collection / CGC / booster box / booster pack / single cards. I am looking for card types such as character cards, ability cards, and law cards. The photos below are examples of each type.",
+        pinsTitle: "Trading Pin Badge Collection",
+        pinsText: "Released by Media Factory. Secondary market references describe it as 12 total types, one random pin per pack.",
+        guideTitle: "Pre-order bonus Official Guide Book",
+        guideText: "FINAL FANTASY TACTICS ADVANCE Official Guide Book / not-for-sale booklet.",
+        gbaspTitle: "GBASP Pearl White Edition",
+        gbaspText: "Console bundle. Includes the game, limited Pearl White GBASP console, AC adapter, original premium strap, and original SP carrying pouch.",
+        bonusTitle: "Bonus items",
+        bonusText: "I am also looking for small bonus items such as postcards, bookmarks, and other not-for-sale card-like inserts. The photos below are examples.",
+        capBox: "Card Game Collection CGC booster box angled photo",
+        capPack: "Card Game Collection CGC booster pack",
+        capBack: "CGC card back",
+        capMarche: "Character card example (ex. Ch-01 Marche Radiuju)",
+        capRitz: "Character card example (ex. Ch-03 Ritz Malheur)",
+        capLaw: "Law card example (ex. La-01 Fight Ban)",
+        capAb01: "Regular ability card example (ex. Ab-01 Mindbreak)",
+        capAb07: "Regular ability card example (ex. Ab-07 Air Render)",
+        capAb40: "Ability card example (ex. Ab-40 Exodus)",
+        capPreorderCover: "Pre-order bonus, not-for-sale Official Guide Book cover",
+        capConsole: "GBA SP Pearl White Edition outer box",
+        capConsolePhoto: "Limited Pearl White GBASP console",
+        capStrap: "Included original premium strap",
+        capPouch: "Included original SP carrying pouch",
+        capPins: "Trading pin badge reference image (market references say 12 types)",
+        capPinsClose: "Trading pin badge reference image (closer photo showing the pin designs more clearly)",
+        capPinsSet2: "Trading pin badge reference image (another full 12-pin set photo)",
+        capPinsBack: "Trading pin badge reference image (close photo of the pin back)",
+        capPinsBoxBarcode: "Trading pin badge reference image (outer box barcode side)",
+        capPinsBoxSide: "Trading pin badge reference image (outer box side text)",
+        capBonusPromo: "Bonus / not-for-sale card-like item example (DORIMAGA 2002 AUTUMN)",
+        capBonusMarche: "Small card-collection style item example (Marche art)",
+        capBonusRitz: "Small card-collection style item example (Ritz art)",
+        capBonusGroup: "Small card-collection style item example (main visual art)"
+      }
+    };
+
+    const buttons = document.querySelectorAll("[data-lang]");
+    const translatable = document.querySelectorAll("[data-i18n]");
+    const zoomOverlay = document.getElementById("zoomOverlay");
+    const zoomImage = document.getElementById("zoomImage");
+    const zoomCaption = document.getElementById("zoomCaption");
+
+    function setLanguage(lang) {
+      const dict = translations[lang] || translations.ja;
+      document.documentElement.lang = lang;
+      document.title = dict.title;
+      translatable.forEach((node) => {
+        node.innerHTML = dict[node.dataset.i18n] || "";
+      });
+      buttons.forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.lang === lang));
+      });
+      localStorage.setItem("ffta-reference-language", lang);
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => setLanguage(button.dataset.lang));
+    });
+
+    function imageCaption(image) {
+      const figureCaption = image.closest("figure")?.querySelector("figcaption")?.textContent?.trim();
+      if (figureCaption) return figureCaption;
+      const item = image.closest(".item");
+      return item?.querySelector(".item-title")?.textContent?.trim() || "";
+    }
+
+    function closeZoom() {
+      zoomOverlay.classList.remove("is-open");
+      zoomOverlay.setAttribute("aria-hidden", "true");
+      zoomImage.removeAttribute("src");
+      zoomCaption.textContent = "";
+    }
+
+    function openZoom(image) {
+      zoomImage.src = image.currentSrc || image.src;
+      zoomImage.alt = imageCaption(image);
+      zoomCaption.textContent = imageCaption(image);
+      zoomOverlay.classList.add("is-open");
+      zoomOverlay.setAttribute("aria-hidden", "false");
+    }
+
+    document.querySelectorAll("main img").forEach((image) => {
+      image.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (zoomOverlay.classList.contains("is-open") && zoomImage.src === (image.currentSrc || image.src)) {
+          closeZoom();
+        } else {
+          openZoom(image);
+        }
+      });
+    });
+
+    zoomOverlay.addEventListener("click", closeZoom);
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeZoom();
+    });
+
+    setLanguage(localStorage.getItem("ffta-reference-language") || "ja");
+  </script>
+</body>
+</html>
