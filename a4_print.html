@@ -60,6 +60,9 @@
       overflow: hidden;
       break-inside: avoid;
     }
+    .card.wide {
+      grid-column: 1 / -1;
+    }
     .card-body {
       padding: 8px;
     }
@@ -90,14 +93,14 @@
     }
     .thumb-row img {
       width: 100%;
-      height: 138px;
+      height: 207px;
       object-fit: contain;
       border: 1px solid var(--line);
       border-radius: 6px;
       background: #fff;
     }
     .thumb-row.tall img {
-      height: 162px;
+      height: 243px;
     }
     .note {
       margin-top: 3px;
@@ -160,7 +163,7 @@
     </section>
 
     <section class="grid">
-      <article class="card">
+      <article class="card wide">
         <div class="card-body">
           <h2 class="jp-title">ファイナルファンタジータクティクスアドバンス カードゲームコレクション</h2>
           <div class="en-title">Final Fantasy Tactics Advance Card Game Collection / CGC</div>
