@@ -194,8 +194,56 @@
       line-height: 1.45;
       text-align: center;
     }
+    .share-footer {
+      margin-top: 22px;
+      padding: 16px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .share-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 180px;
+      gap: 16px;
+      align-items: center;
+    }
+    .share-title {
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .share-text,
+    .share-contact,
+    .share-note {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .share-contact a {
+      color: var(--accent);
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .share-contact a:hover {
+      text-decoration: underline;
+    }
+    .share-qr {
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+    }
+    .share-qr img {
+      width: 100%;
+      max-width: 180px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 8px;
+    }
     @media (max-width: 680px) {
       summary.item-summary {
+        grid-template-columns: 1fr;
+      }
+      .share-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -358,6 +406,20 @@
         </div>
       </details>
     </section>
+
+    <section class="share-footer">
+      <div class="share-grid">
+        <div>
+          <h2 class="share-title" data-i18n="shareTitle"></h2>
+          <div class="share-text" data-i18n="shareText"></div>
+          <div class="share-contact"><span data-i18n="shareContact"></span> <a href="mailto:sizscomro@gmail.com">sizscomro@gmail.com</a></div>
+        </div>
+        <div class="share-qr">
+          <img src="images/47_share_qr_github_pages.png" alt="QR code for shared page">
+          <div class="share-note" data-i18n="shareQrNote"></div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <nav class="language-toggle" aria-label="Language">
@@ -412,7 +474,11 @@
         capBonusPromo: "特典・非売品カード風小物の見本（ドリマガ 2002 AUTUMN）",
         capBonusMarche: "小物系カードコレクション見本（マルシュ柄）",
         capBonusRitz: "小物系カードコレクション見本（リッツ柄）",
-        capBonusGroup: "小物系カードコレクション見本（メインビジュアル柄）"
+        capBonusGroup: "小物系カードコレクション見本（メインビジュアル柄）",
+        shareTitle: "共有・連絡先",
+        shareText: "このページを他の人に見せたい場合は、下のQRコードを読み取ってください。",
+        shareContact: "連絡先:",
+        shareQrNote: "このページの共有用QRコード"
       },
       ko: {
         title: "파이널 판타지 택틱스 어드밴스 관련 굿즈를 찾고 있습니다",
@@ -451,7 +517,11 @@
         capBonusPromo: "특전/비매품 카드형 소품 예시 (도리마가 2002 AUTUMN)",
         capBonusMarche: "소품형 카드 컬렉션 예시 (마르슈 그림)",
         capBonusRitz: "소품형 카드 컬렉션 예시 (리츠 그림)",
-        capBonusGroup: "소품형 카드 컬렉션 예시 (메인 비주얼 그림)"
+        capBonusGroup: "소품형 카드 컬렉션 예시 (메인 비주얼 그림)",
+        shareTitle: "공유 / 연락처",
+        shareText: "다른 사람에게 이 페이지를 공유하려면 아래 QR 코드를 보여주면 됩니다.",
+        shareContact: "연락처:",
+        shareQrNote: "이 페이지 공유용 QR 코드"
       },
       en: {
         title: "I am looking for Final Fantasy Tactics Advance goods",
@@ -490,7 +560,11 @@
         capBonusPromo: "Bonus / not-for-sale card-like item example (DORIMAGA 2002 AUTUMN)",
         capBonusMarche: "Small card-collection style item example (Marche art)",
         capBonusRitz: "Small card-collection style item example (Ritz art)",
-        capBonusGroup: "Small card-collection style item example (main visual art)"
+        capBonusGroup: "Small card-collection style item example (main visual art)",
+        shareTitle: "Share / Contact",
+        shareText: "If you want to share this page with someone else, please use the QR code below.",
+        shareContact: "Contact:",
+        shareQrNote: "QR code for this page"
       }
     };
 
